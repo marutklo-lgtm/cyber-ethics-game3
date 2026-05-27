@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Cyber Ethics 3D - Final Fix</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+        #ui { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,20,0.9); padding: 20px; border-radius: 10px; color: #00d4ff; display: none; text-align: center; border: 2px solid #00d4ff; z-index: 100; width: 300px; }
+        #start-screen { position: absolute; width: 100%; height: 100%; background: #050510; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 200; }
+        .btn { background: #00d4ff; color: #000; border: none; padding: 15px 30px; margin: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 18px; }
+        #stats { position: absolute; top: 10px; left: 10px; color: #00d4ff; font-size: 18px; z-index: 10; }
+    </style>
+</head>
+<body>
+
+<div id="start-screen">
+    <h1 style="color:#00d4ff">CYBER ETHICS 3D</h1>
+    <button class="btn" onclick="start()">กดเพื่อเริ่มเกม</button>
+    <p style="font-size:12px; color:#555">ใช้ W,A,S,D เพื่อเดิน</p>
+</div>
+
+<div id="stats">SCORE: <span id="score">0</span></div>
+<div id="ui">
+    <h3 id="q-title"></h3>
+    <p id="q-desc"></p>
+    <div id="opts"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+    let scene, camera, renderer, player, clock, score=0, active=false;
+    let moveF=false, moveB=false, turnL=false, turnR=false;
+    let items = [];
+
+    // ฟังก์ชันเริ่มเกม (ต้องกดปุ่มก่อนถึงทำงาน)
+    function start() {
+        document.getElementById('start-screen').style.display = 'none';
+        init();
+        active = true;
+        animate();
+        // ลองเล่นเพลงแบบปลอดภัย
+        const music = new Audio('bgm.mp3');
+        music.loop = true;
+        music.play().catch(e => console.log("Music file not found, continuing without sound."));
+    }
+
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020205);
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        clock = new THREE.Clock();
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const grid = new THREE.GridHelper(100, 20, 0x00d4ff,
